@@ -1,51 +1,12 @@
 from pathlib import Path
 from PIL import Image
-from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Optional
+from dataclasses import asdict
 import json
 
-
-TAMANHO_MAXIMO_KB = 500
-FORMATOS_PERMITIDOS = {"JPEG", "JPG", "PNG"}
-LARGURA_MINIMA = 300
-ALTURA_MINIMA = 400
-
-@dataclass
-class ResultadoValidacao:
-    arquivo: str
-    status: str
-    validacoes: Dict[str, bool]
-    detalhes: Dict[str, Optional[float]]
-    mensagens: List[str] = field(default_factory=list)
-
-
-def validar_tamanho_arquivo(caminho_imagem: Path):
-    tamanho_bytes = caminho_imagem.stat().st_size
-    tamanho_kb = tamanho_bytes / 1024
-
-    valido = tamanho_kb <= TAMANHO_MAXIMO_KB
-
-    mensagem = f"Tamanho {'OK' if valido else 'excedido'}: {tamanho_kb:.2f} KB"
-    return valido, mensagem, tamanho_kb
-
-
-
-def validar_formato(imagem: Image.Image):
-    formato = imagem.format.upper() if imagem.format else "DESCONHECIDO"
-
-    valido = formato in FORMATOS_PERMITIDOS
-
-    mensagem = f"Formato {'OK' if valido else 'inválido'}: {formato}"
-    return valido, mensagem, formato
-
-
-def validar_resolucao(imagem: Image.Image):
-    largura, altura = imagem.size
-
-    valido = largura >= LARGURA_MINIMA and altura >= ALTURA_MINIMA
-
-    mensagem = f"Resolução {'OK' if valido else 'insuficiente'}: {largura}x{altura}"
-    return valido, mensagem, largura, altura
+from models.resultado_validacao import ResultadoValidacao
+from validadores.tamanho import validar_tamanho_arquivo
+from validadores.formato import validar_formato
+from validadores.resolucao import validar_resolucao
 
 
 def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
