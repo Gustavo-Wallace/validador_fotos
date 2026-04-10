@@ -9,6 +9,8 @@ from src.validadores.formato import validar_formato
 from src.validadores.resolucao import validar_resolucao
 from src.validadores.cor import validar_imagem_colorida
 
+from src.validadores.getexif import ler_metadados_exif
+
 
 def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
     caminho_imagem = Path(caminho_arquivo)
@@ -26,6 +28,7 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
         tamanho_valido, msg_tamanho, tamanho_kb = validar_tamanho_arquivo(caminho_imagem)
         formato_valido, msg_formato, formato = validar_formato(imagem)
         resolucao_valida, msg_resolucao, largura, altura = validar_resolucao(imagem)
+        exif = ler_metadados_exif(imagem)
         cor_valida, msg_cor = validar_imagem_colorida(imagem)
 
         validacoes = {
@@ -43,7 +46,8 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
             "tamanho_kb": round(tamanho_kb, 2),
             "formato": formato,
             "largura": largura,
-            "altura": altura
+            "altura": altura,
+            "exif": exif
         }
 
         return ResultadoValidacao(
@@ -56,8 +60,9 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
 
 
 if __name__ == "__main__":
-    caminho_imagem = Path(__file__).parent.parent / "imagens_teste" / "foto1_pb.png"
+    caminho_imagem = Path(__file__).parent.parent / "imagens_teste" / "img3.jpg"
 
     resultado = validar_imagem(str(caminho_imagem))
 
-    print(json.dumps(asdict(resultado), indent=4, ensure_ascii=False))
+    print(json.dumps(asdict(resultado), indent=4, ensure_ascii=False, default=str))
+
