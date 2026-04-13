@@ -9,7 +9,7 @@ from src.validadores.formato import validar_formato
 from src.validadores.resolucao import validar_resolucao
 from src.validadores.cor import validar_imagem_colorida
 
-from src.validadores.getexif import ler_metadados_exif
+from src.validadores.exif import ler_metadados_exif
 
 
 def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
