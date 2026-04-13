@@ -1,5 +1,5 @@
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps
 from dataclasses import asdict
 import json
 
@@ -7,8 +7,8 @@ from src.models.resultado_validacao import ResultadoValidacao
 from src.validadores.tamanho import validar_tamanho_arquivo
 from src.validadores.formato import validar_formato
 from src.validadores.resolucao import validar_resolucao
+from src.validadores.proporcao import validar_proporcao
 from src.validadores.cor import validar_imagem_colorida
-
 from src.validadores.exif import ler_metadados_exif
 
 
@@ -25,20 +25,33 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
         )
 
     with Image.open(caminho_imagem) as imagem:
+        # lê EXIF na imagem original
+        exif = ler_metadados_exif(imagem)
+
+        # aplica a orientação correta antes das validações visuais
+        imagem_corrigida = ImageOps.exif_transpose(imagem)
+
         tamanho_valido, msg_tamanho, tamanho_kb = validar_tamanho_arquivo(caminho_imagem)
         formato_valido, msg_formato, formato = validar_formato(imagem)
-        resolucao_valida, msg_resolucao, largura, altura = validar_resolucao(imagem)
-        exif = ler_metadados_exif(imagem)
-        cor_valida, msg_cor = validar_imagem_colorida(imagem)
+        resolucao_valida, msg_resolucao, largura, altura = validar_resolucao(imagem_corrigida)
+        proporcao_valida, msg_proporcao, proporcao_calculada = validar_proporcao(imagem_corrigida)
+        cor_valida, msg_cor = validar_imagem_colorida(imagem_corrigida)
 
         validacoes = {
             "tamanho": tamanho_valido,
             "formato": formato_valido,
             "resolucao": resolucao_valida,
+            "proporcao": proporcao_valida,
             "colorida": cor_valida
         }
 
-        mensagens = [msg_tamanho, msg_formato, msg_resolucao, msg_cor]
+        mensagens = [
+            msg_tamanho,
+            msg_formato,
+            msg_resolucao,
+            msg_proporcao,
+            msg_cor
+        ]
 
         status = "APROVADO" if all(validacoes.values()) else "REPROVADO"
 
@@ -47,6 +60,7 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
             "formato": formato,
             "largura": largura,
             "altura": altura,
+            "proporcao_calculada": round(proporcao_calculada, 3),
             "exif": exif
         }
 
@@ -60,9 +74,8 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
 
 
 if __name__ == "__main__":
-    caminho_imagem = Path(__file__).parent.parent / "imagens_teste" / "img3.jpg"
+    caminho_imagem = Path(__file__).parent.parent / "imagens_teste" / "foto1.png"
 
     resultado = validar_imagem(str(caminho_imagem))
 
     print(json.dumps(asdict(resultado), indent=4, ensure_ascii=False, default=str))
-

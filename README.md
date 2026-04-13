@@ -42,11 +42,16 @@ Atualmente o projeto já realiza:
 - JSON
 - pathlib
 
--- Em andamento
+-- Em andamento --
 
 ## Estrutura do projeto
 
 -- Em construção --
+
+```text
+teste
+teste
+```
 
 ## Autor
 Gustavo Wallace Macedo Santos
