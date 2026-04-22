@@ -11,6 +11,7 @@ from src.validadores.proporcao import validar_proporcao
 from src.validadores.cor import validar_imagem_colorida
 from src.validadores.nitidez import validar_nitidez
 from src.validadores.rosto import validar_rosto
+from src.validadores.enquadramento import validar_enquadramento_rosto
 
 from src.validadores.exif import ler_metadados_exif
 
@@ -41,6 +42,7 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
         cor_valida, msg_cor = validar_imagem_colorida(imagem_corrigida)
         nitifez_valida, msg_nitidez, valor_nitidez = validar_nitidez(imagem_corrigida)
         rosto_valido, msg_rosto, quantidade_rostos = validar_rosto(imagem_corrigida)
+        enquadramento_valido, msg_enquadramento, detalhes_enquadramento = validar_enquadramento_rosto(imagem_corrigida)
 
         validacoes = {
             "tamanho": tamanho_valido,
@@ -49,7 +51,8 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
             "proporcao": proporcao_valida,
             "colorida": cor_valida,
             "nitidez": nitifez_valida,
-            "rosto": rosto_valido
+            "rosto": rosto_valido,
+            "enquadramento": enquadramento_valido
         }
 
         mensagens = [
@@ -59,7 +62,8 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
             msg_proporcao,
             msg_cor,
             msg_nitidez,
-            msg_rosto
+            msg_rosto,
+            msg_enquadramento
         ]
 
         status = "APROVADO" if all(validacoes.values()) else "REPROVADO"
@@ -72,6 +76,7 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
             "proporcao_calculada": round(proporcao_calculada, 3),
             "nitidez_calculada": round(valor_nitidez, 2),
             "quantidade_rostos": quantidade_rostos,
+            "enquadramento": detalhes_enquadramento,
 
             "exif": exif
         }
@@ -86,7 +91,7 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
 
 
 if __name__ == "__main__":
-    caminho_imagem = Path(__file__).parent.parent / "imagens_teste" / "2p2.jpg"
+    caminho_imagem = Path(__file__).parent.parent / "imagens_teste" / "2p.png"
 
     resultado = validar_imagem(str(caminho_imagem))
 

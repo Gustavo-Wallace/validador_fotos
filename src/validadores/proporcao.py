@@ -1,7 +1,7 @@
 from PIL import Image
 
 PROPORCAO_ESPERADA = 0.750
-TOLERANCIA_PROPORCAO = 0.20
+TOLERANCIA_PROPORCAO = 0.200
 
 
 def validar_proporcao(imagem: Image.Image) -> tuple[bool, str, float]:
@@ -9,7 +9,7 @@ def validar_proporcao(imagem: Image.Image) -> tuple[bool, str, float]:
 
     proporcao_calculada = largura / altura
 
-    valido = abs(proporcao_calculada - PROPORCAO_ESPERADA) <= TOLERANCIA_PROPORCAO
+    valido = abs(proporcao_calculada - PROPORCAO_ESPERADA) <= TOLERANCIA_PROPORCAO                    
 
     if valido:
         return (
