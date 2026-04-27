@@ -32,7 +32,7 @@ def validar_imagem(caminho_arquivo: str) -> ResultadoValidacao:
         
         exif = ler_metadados_exif(imagem)
 
-        # orientação correta antes das validações
+        # orientação correta
         imagem_corrigida = ImageOps.exif_transpose(imagem)
 
         tamanho_valido, msg_tamanho, tamanho_kb = validar_tamanho_arquivo(caminho_imagem)
